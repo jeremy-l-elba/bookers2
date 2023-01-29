@@ -6,77 +6,89 @@
 <div class ="container">
   <div class ="row">
     <div class ="col-md-3">
-  <h2>User info</h2>
-  <p><%= image_tag @books.user.get_profile_image(100,100) %></p>
-  <table class="table">
-      <tbody><tr></tr>
-      <tr>
-          <th>Name</th>
-          <th><%= @books.user.name %></th>
-      </tr>
-      <tr>
-          <th>Introduction</th>
-          <th><%= @books.user.introduction %></th>
-      </tr>
-      </tbody>
-  </table>
+      <h2>User info</h2>
+       <p><%= image_tag @books.user.get_profile_image(100,100) %></p>
+       <table class="table">
+        <tbody><tr></tr>
+        <tr>
+         <th>Name</th>
+         <th><%= @books.user.name %></th>
+        </tr>
+        <tr>
+         <th>Introduction</th>
+         <th><%= @books.user.introduction %></th>
+        </tr>
+        </tbody>
+       </table>
 
   
-   <div class="row">
-    <%= link_to edit_user_path(@books.user), class: "btn btn-outline-secondary btn-block" do%>
-    <i class="fas fa-user-cog"></i>
-    <% end %>
-  </div>
+    <div class="row">
+     <%= link_to edit_user_path(@books.user), class: "btn btn-outline-secondary btn-block" do%>
+     <i class="fas fa-user-cog"></i>
+     <% end %>
+    </div>
   
   
-  <h2 class="mt-3">New book</h2>
-
-  <div>
-  <% if @book.errors.any? %>
-  <%= @book.errors.count %>errors prohibited this obj form being saved:
-  <ul>
-    <% @book.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
-    <% end %>
-  </ul>
-  <% end %>
-  </div>
-
-  <%= form_with model: @book, url: books_path, method: :post do |f| %>
-  <div>  
-  <div class="form-group"><h4>Title</h4>
-      <%= f.text_field :title %>
-  </div>
-  <div class="form-group"><h4>Opinion</h4>
-      <%= f.text_area :body %>
-  </div>
-  <div class="form-group">
-      <%= f.submit 'Create Book', class: 'btn btn-success' %>
-  </div>
-  <% end %>
-   </div>
-   </div>
+      <h2 class="mt-3">New book</h2>
+      <%= render 'users/list2', book: @book %>
+      </div>
     
     <div class ="col-md-8 offset-md-1">
-  		<h2>Book detail</h2>
-  		<table class="table">
-  		  <tbody>
-  		  <tr>
+  	  <h2>Book detail</h2>
+  	  <div class="row">
+  	   <table class="table">
+  		<tbody>
+  		 <tr>
           <td><%= link_to  user_path(@books.user) do %><%= image_tag @books.user.get_profile_image(100,100) %><br>
-          <%= @books.user.name %><% end %>
+              <%= @books.user.name %><% end %>
           </td>
           <td><%= link_to book_path(@books) do %>
-          <%= @books.title %><% end %>
-          </td>
+              <%= @books.title %><% end %></td>
           <td><%= @books.body %></td>
-          <% if @books.user == current_user %>
-            <td><%= link_to "Edit", edit_book_path(@books), class: 'btn btn-sm btn-success' %></td>
-            <td><%= link_to "Destroy", book_path(@books), method: :delete, class: 'btn btn-sm btn-danger',"data-confirm" => "Are you sure？" %></td>
+              <% if @books.user == current_user %>
+          <td><%= link_to "Edit", edit_book_path(@books), class: 'btn btn-sm btn-success' %></td>
+          <td><%= link_to "Destroy", book_path(@books), method: :delete, class: 'btn btn-sm btn-danger',"data-confirm" => "Are you sure？" %></td>
+              <% end %>
+           
+              <% if @books.favorited_by?(current_user) %>
+          <td><%= link_to book_favorites_path(@books), method: :delete do %>
+              <i class="fas fa-heart" style="color:#ff0000;"></i><%= @books.favorites.count %><% end %></td>
+              <% else %>
+          <td><%= link_to book_favorites_path(@books), method: :post do %>
+               <i class="fas fa-heart" style="color:#00bfff;"></i><%= @books.favorites.count %><% end %></td>
+              <% end %>
+              
+          <td>コメント数：<%= @books.book_comments.count %></td>
+         </tr>
+        </tbody>
+       </table>
+        </div>
+          
+          
+      <div class="row">
+  	   <table class="table">
+  	     <% @books.book_comments.each do |book_comment| %>
+  		<tbody>
+  		 <tr>
+            <td><%= image_tag book_comment.user.get_profile_image(100,100) %><br>
+                <%= link_to user_path(book_comment.user) do %><%= book_comment.user.name %><% end %></td>
+            <td><%= book_comment.comment %></td>
+                <% if book_comment.user == current_user %>
+            <td><%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), method: :delete, class: 'btn btn-sm btn-danger' %><% end %></td>
+                <% end %>
+          </tr>
+         </tbody>
+         </table>
+         
+        
+           
+        <div class="row">
+          <%= form_with model: [@books, @book_comment] do |f| %>
+          <%= f.text_area :comment, rows: '5' %>
+          <%= f.submit "送信する" %>
           <% end %>
-        </tr>
-          </tbody>
-        </table>
+        </div>
     </div>
-</div>
+  </div>
 </div>
 

@@ -1,0 +1,14 @@
+ <h1>User info</h1>
+  <p><%= image_tag current_user.get_profile_image(100,100) %></p>
+  <table class="table">
+      <tbody><tr></tr>
+      <tr>
+          <th>Name</th>
+          <th><%= current_user.name %></th>
+      </tr>
+      <tr>
+          <th>Introduction</th>
+          <th><%= current_user.introduction %></th>
+      </tr>
+      </tbody>
+  </table>
